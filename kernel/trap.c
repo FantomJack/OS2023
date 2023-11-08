@@ -65,7 +65,35 @@ usertrap(void)
     intr_on();
 
     syscall();
-  } else if((which_dev = devintr()) != 0){
+
+   // Page fault on store
+  }/*else if(r_scause() == 15){
+    
+    uint64 va = r_stval();
+    if(va >= p->sz)
+      p->killed = 1;
+    
+    pte_t* pte = walk(p->pagetable, va, 0);
+    if(pte == 0):
+      return -1;
+    if((*pte & PTE_RSW) == 0 || (*pte & PTE_U) == 0 || (*pte & PTE_V) == 0)
+      return -1;
+
+    uint64 pa = PTE2PA(*pte);
+    flags = PTE_FLAGS(*pte) & ~PTE_RSW;
+
+
+    char* mem;
+    if((mem = kalloc()) == 0)
+      return -1;
+    memmove(mem, (char*)pa, PGSIZE);
+    
+    uvmunmap(p->pagetable, va, 1, 1);
+    if(mappages(p->pagetable, va, PGSIZE, (uint64)mem, flags | PTE_W) != 0){
+      uvmunmap(p->pagetable, va, 1, 1);
+    }
+    */
+  else if((which_dev = devintr()) != 0){
     // ok
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
